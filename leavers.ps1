@@ -100,9 +100,9 @@ Set-CasMailbox -Identity $EmployeeDetails.mail -OWAEnabled $false -ActiveSyncEna
 # Move U Drive to Backup
 # Prompt for AD Username 
 $UDrive = Read-Host "Employee Full name" 
-Move-Item -Path "\\vmjmwdatastore\users\$UDrive" -Destination "\\jmw-fs01\backup_repo_01$\$Employee\$UDrive"
+Move-Item -Path "\\vmjmwdatastore\users\$UDrive" -Destination "\\jmw-fs01\backup_repo_01$\$Employee\U Drive\$UDrive" -force
 # Move Citrix Profile to Backup
-Move-Item -Path "\\jmw-fs01\ctxupm$\$employee" -Destination "\\jmw-fs01\backup_repo_01$\$Employee\Citrix"
+Move-Item -Path "\\jmw-fs01\ctxupm$\$employee" -Destination "\\jmw-fs01\backup_repo_01$\$Employee\CitrixProfile" -force
 }
 
 
