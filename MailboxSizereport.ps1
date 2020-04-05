@@ -1,3 +1,4 @@
+# Get Exchange Mailbox size for all Mailboxes, ouput to CSV
 $dir = read-host "Directory to save the CSV file" 
 $server = read-host "Exchange Server Name" 
  
