@@ -22,19 +22,11 @@ Leavers process:
 10) Collect laptop / mobile
 11) Call Divert
 12) Email divert  
-#>
-  
-Write-Host " **************** PLEASE ENTER ACTIVE DIRECTORY ADMIN CREDENTIALS **************** " 
-$Credential = Get-Credential -Credential "$env:USERDOMAIN\$env:USERNAME" 
-$DC = $env:LOGONSERVER.Substring(2) 
-  
-#Initiate Remote PS Session to local DC 
-$ADPowerShell = New-PSSession -ComputerName $DC -Authentication Negotiate -Credential $Credential 
+#> 
   
 # Import-Module ActiveDirectory 
 write-host "Importing Active Directory PowerShell Commandlets" 
-Invoke-Command -Session $ADPowerShell -scriptblock { import-module ActiveDirectory } 
-Import-PSSession -Session $ADPowerShell -Module ActiveDirectory -AllowClobber -ErrorAction Stop 
+import-module ActiveDirectory
   
 # Retrieve AD Details 
 $ADDetails = Get-ADDomain 
@@ -60,7 +52,7 @@ $Manager = Get-ADUser $EmployeeDetails.Manager -Properties Mail
 write-host "Exporting PST file to Backup Repo" 
 $ExchangeSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://JMW-EXCH11/PowerShell
 Import-PSSession $ExchangeSession
-New-MailboxExportRequest -Mailbox $Employee -FilePath \\jmw-fs01\backup_repo_01$\"$Employee""Mailbox".pst
+New-MailboxExportRequest -Mailbox $Employee -FilePath \\jmw-fs01\backup_repo_01$\$Employee\Mailbox.pst
 
 
 Clear-Host 
@@ -92,7 +84,8 @@ write-host "Step2. Disabling $Employee Active Directory Account." -ForegroundCol
 Disable-ADAccount $Employee 
 # Backup Group Membership, so that this can be re-imported if required
 write-host "Step 3, Taking backup of $Employee group membership"
-Get-ADPrincipalGroupMembership $Employee | select -expand name | Export-Csv -Path "\\jmw-fs01\backup_repo_01$\$employee\GroupMembershipBackup.csv"
+New-Item -Path "\\jmw-fs01\backup_repo_01$" -Name $Employee -ItemType Directory
+Get-ADPrincipalGroupMembership $Employee | select -expand name | Out-File "\\jmw-fs01\backup_repo_01$\$Employee\GroupMembershipBackup.csv"
 # Remove all AD Groups
 Get-AdPrincipalGroupMembership -Identity $Employee | Where-Object -Property Name -Ne -Value 'Domain Users' | Remove-AdGroupMember -Members $Employee
 # Add to Deny all Access
@@ -110,6 +103,8 @@ $UDrive = Read-Host "Employee Full name"
 Move-Item -Path "\\vmjmwdatastore\users\$UDrive" -Destination "\\jmw-fs01\backup_repo_01$\$Employee\$UDrive"
 # Move Citrix Profile to Backup
 Move-Item -Path "\\jmw-fs01\ctxupm$\$employee" -Destination "\\jmw-fs01\backup_repo_01$\$Employee\Citrix"
+}
+
 
 # Else cancel operation
 
