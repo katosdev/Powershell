@@ -1,4 +1,4 @@
-##Sets expiration date and time for Active Directory User.
+##Sets expiration date and time for Active Directory User, useful for temporary audit accounts etc. 
 
 $user = read-Host 'Whats the AD username to set to expire:'
 Set-ADAccountExpiration -Identity $user -DateTime '12/08/2016 17:00:00'
